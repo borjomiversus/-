@@ -90,7 +90,6 @@ public:
         header->next = trailer;
         trailer->prev = header;
     }
-'''
 
     
     // Вставка без жодних перевірок на NULL
