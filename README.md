@@ -286,8 +286,6 @@ public:
   
 ## 8. Офіційні джерела та матеріали дослідження
 
-### 7. Офіційні джерела та матеріали дослідження
-
 **Циклічний список (Circular Linked List):**
 * GeeksforGeeks: [Circular Linked List in C++](https://www.geeksforgeeks.org/cpp/circular-linked-list-in-cpp/)
 * GeeksforGeeks: [DSA Circular Linked List (Теорія та алгоритми)](https://www.geeksforgeeks.org/dsa/circular-linked-list/)
