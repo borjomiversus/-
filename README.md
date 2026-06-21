@@ -286,23 +286,27 @@ public:
   
 ## 8. Офіційні джерела та матеріали дослідження
 
-1. **Circular Linked List:**
-   * Теоретична база та алгоритми: [GeeksforGeeks — DSA Circular Linked List](https://www.geeksforgeeks.org/dsa/circular-linked-list/)
-   * Особливості реалізації на C++: [GeeksforGeeks — Circular Linked List у C++](https://www.geeksforgeeks.org/cpp/circular-linked-list-in-cpp/)
-   * Відео-гайд з побудови циклу: [YouTube — Circular Linked List Tutorial](https://www.youtube.com/watch?v=gztwNv4o_9E)
+### 7. Офіційні джерела та матеріали дослідження
 
-2. **Sentinel Nodes:**
-   * Концепція двозв'язного списку з вузлами: [GeeksforGeeks — Doubly Linked List Using Sentinel Nodes](https://www.geeksforgeeks.org/dsa/doubly-linked-list-using-sentinel-nodes/)
-   * Патерн Dummy-вузлів: [YouTube — What are Sentinel Nodes?](https://www.youtube.com/watch?v=ubxGZC7Di_U)
-   * Архітектурне застосування патерну: [Medium — Linked List Pattern: Sentinel Node](https://medium.com/@DharunRaju/linked-list-pattern-sentinel-node-4eb2ce7851be)
+**Циклічний список (Circular Linked List):**
+* GeeksforGeeks: [Circular Linked List in C++](https://www.geeksforgeeks.org/cpp/circular-linked-list-in-cpp/)
+* GeeksforGeeks: [DSA Circular Linked List (Теорія та алгоритми)](https://www.geeksforgeeks.org/dsa/circular-linked-list/)
+* Reddit (r/learnprogramming): [Practical application of Circular Linked Lists](https://www.reddit.com/r/learnprogramming/comments/2hw3r8/practical_application_of_circular_linked_lists/)
+* YouTube (Навчальний гайд): [Circular Linked List Tutorial - Why Use a Circular List?](https://www.youtube.com/watch?v=gztwNv4o_9E)
+* YouTube (Візуалізація алгоритму): [Circular Linked List Implementation](https://www.youtube.com/watch?v=0u9IWgEoE6w)
 
-3. **XOR Linked List:**
-   * Низькорівневе стиснення вказівників: [GeeksforGeeks — XOR Linked List (Memory Efficient)](https://www.geeksforgeeks.org/dsa/xor-linked-list-a-memory-efficient-doubly-linked-list-set-1/)
-   * Математичне обґрунтування: [YouTube — XOR Linked List Explanation](https://www.youtube.com/watch?v=BrJP8QViH-s)
+**Список із Sentinel Nodes:**
+* GeeksforGeeks: [Doubly Linked List Using Sentinel Nodes](https://www.geeksforgeeks.org/dsa/doubly-linked-list-using-sentinel-nodes/)
+* Medium: [Linked List Pattern: Sentinel Node](https://medium.com/@DharunRaju/linked-list-pattern-sentinel-node-4eb2ce7851be)
+* Reddit (r/cs2a): [Understanding sentinel nodes and their importance](https://www.reddit.com/r/cs2a/comments/1h1d8xj/understanding_sentinel_nodes_and_their_importance/)
+* YouTube (Теоретичний розбір): [What are Sentinel Nodes?](https://www.youtube.com/watch?v=ubxGZC7Di_U)
+
+**XOR Linked List:**
+* GeeksforGeeks: [XOR Linked List – A Memory Efficient Doubly Linked List](https://www.geeksforgeeks.org/dsa/xor-linked-list-a-memory-efficient-doubly-linked-list-set-1/)
+* YouTube (Математичне обґрунтування та алгоритм обходу): [XOR Linked List Explanation](https://www.youtube.com/watch?v=BrJP8QViH-s)
 
 Управління задачами в рамках дослідження здійснювалося за методологією Kanban:
 
 * **Live-дошка:** [Посилання на Trello-дошку проєкту](https://trello.com/invite/b/6a36c5b8b778f53705e24a0e/ATTI08fed431280fdf3bf8b548732b9c7ecbF4F833E5/%D0%B4%D0%BE%D1%81%D0%BB%D1%96%D0%B4%D0%B6%D0%B5%D0%BD%D0%BD%D1%8F)
-* **Експорт метаданих планування збережено у репозиторії у форматі JSON (`management/trello.json`).
-
-![Дошка Канбан (Trello)](time%20management%20%28trello%29/trellophoto.png)
+* **Дошка Trello у форматі JSON (`management/trello.json`).
+![Дошка Trello](time%20management%20%28trello%29/trellophoto.png)
