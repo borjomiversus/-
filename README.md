@@ -229,20 +229,80 @@ public:
 * **Виправлення:** Логіку було скориговано шляхом примусового кастування адрес до цілочисельного типу `uintptr_t` з бібліотеки `<cstdint>` всередині кастомної функції `XOR()`. 
 * Також у початкових кодах ШІ були відсутні деструктори, що призводило до Memory Leaks під час повторних бенчмарків. У фінальну версію було додано деструктори з деалокацією пам'яті через `delete`.
 
----
+## 7. Історичні відомості, практичні застосування, обговорення на форумах
+### Про Circular List (Алгоритм Round-Robin)
 
-## 7. Офіційні джерела та матеріали дослідження
+Циклічні списки є основою для алгоритму Round-Robin (кругове обслуговування), який масово використовується в індустрії:
+
+* **Планування в операційних системах (OS Scheduling):** Як зазначається в технічних матеріалах Scaler, сучасні ОС використовують циклічні черги для розподілу процесорного часу. Процесор виділяє кожній задачі рівний квант часу (time slice), а після його завершення процес автоматично переміщується в кінець циклічного списку, поступаючись місцем наступному.
+* **Балансування мережевого навантаження (Load Balancing):** За даними CDNetworks, балансувальники трафіку використовують цей патерн для рівномірного розподілу запитів від користувачів між кількома серверами у дата-центрах. Запити передаються серверам строго по колу, що запобігає перевантаженню будь-якого з них.
+* **Автоматизація бізнес-процесів (Task Routing):** У CRM-системах, службах підтримки та розумних календарях (наприклад, Cal.com та Reclaim.ai) циклічні списки забезпечують справедливий розподіл навантаження. Нові заявки або дзвінки призначаються вільним менеджерам по черзі, замикаючи коло після останнього працівника.
+* **Турнірні сітки (Tournament Logic):** У кіберспорті та спортивних застосунках (як Tournamently) кругова система (кожен грає з кожним) програмно найпростіше реалізується саме через зациклені масиви даних, де вказівник послідовно зміщується для формування пар супротивників.
+
+* Scaler Topics: [Round-Robin Scheduling in OS](https://www.scaler.com/topics/round-robin-scheduling-in-os/)
+* CDNetworks Glossary: [What is Round Robin?](https://www.cdnetworks.com/glossary/round-robin/)
+* Cal.com Wiki: [Round-Robin Scheduling: Use Cases & Examples Across Industries](https://cal.com/wiki/round-robin-scheduling-use-cases-examples-accross-industries)
+* Reclaim.ai Blog: [What is a Round Robin?](https://reclaim.ai/blog/what-is-round-robin)
+* Tournamently Blog: [Round Robin Tournament Format Explained](https://tournamently.app/blog/round-robin-tournament-format-explained)
+
+### Про Sentinel Nodes 
+
+Було знайдено різні обговорення про доцільність використання std::list у C++ та архітектуру Linux:
+
+* **Реалізація std::list у C++ (Sentinel Nodes):** Як розбирається в навчальних матеріалах CodeSignal, контейнер std::list є класичним двозв'язним списком. Проте його ключова архітектурна особливість — використання Sentinel Node для репрезентації ітератора end(). Це дозволяє безпечно виконувати операції вставки/видалення без ризику розіменування нульового вказівника (NullPointerException) та зберігає цілісність списку навіть тоді, коли він стає порожнім.
+
+* **Критика в індустрії:** У реальних проєктах std::list використовується обережно. Через фрагментацію пам'яті (кожен вузол виділяється окремо) процесор витрачає багато часу на завантаження даних у кеш (Cache Misses). Тому масиви (std::vector) часто працюють швидше, незважаючи на $O(n)$ зсуви. std::list обирають лише тоді, коли критично важливо уникнути інвалідації ітераторів (Iterator Invalidation) при модифікації масиву.
+
+* **Ядро Linux та struct list_head (Інтрузивні списки):**
+  Як описується в аналітиці від Medium та Dev.to, ядро операційної системи Linux (Linux Kernel) використовує власну, унікальну імплементацію двозв'язного циклічного списку. Замість того, щоб список містив дані (як у класичному підході), дані містять список.
+  * Структура list_head має лише два вказівники (next та prev) і жодних корисних даних. Вона вбудовується безпосередньо всередину інших структур ядра (наприклад, процесів або драйверів).
+  * Щоб отримати самі дані, розробники ядра використовують геніальний C-макрос container_of(), який за допомогою адресної арифметики вираховує початок батьківської структури. Це дозволяє ядру Linux об'єднувати абсолютно різні об'єкти в одну чергу без виділення додаткової пам'яті під вузли списку, що робить алгоритм екстремально швидким і економним.
+
+  * CodeSignal: [Introduction to std::list in C++](https://codesignal.com/learn/courses/fundamental-data-structures-linked-lists-in-cpp/lessons/introduction-to-stdlist-in-cpp)
+* Дискусія на Reddit (r/cpp): [Does anybody use std::list?](https://www.reddit.com/r/cpp/comments/jf3dwo/does_anybody_use_stdlist/)
+* Medium (Boutnaru): [The Linux Kernel Data Structures Journey: struct list_head](https://medium.com/@boutnaru/the-linux-kernel-data-strctures-journey-struct-list-head-87fa91a5ce1c)
+* Dev.to: [Linked List in the Linux Kernel](https://dev.to/sauravshah31/linked-list-in-the-linux-kernel-46cj)
+
+### Про XOR linked list
+
+Було знайдено статті про життєвий цикл цієї структури даних:
+
+* **Епоха дефіциту пам'яті:**
+  Структура набула популярності у 1980-х роках. У той час обсяг оперативної пам'яті (RAM) комп'ютерів вимірювався кілобайтами. Економія 4 або 8 байтів на кожному вузлі двозв'язного списку була не просто оптимізацією, а питанням життєздатності програми. XOR-список вважався геніальним хаком, що дозволяв отримати функціонал двозв'язного списку за ціною однозв'язного.
+
+* **Чому XOR-списки майже не використовують у сучасному Enterprise-програмуванні:**
+  Згідно з дискусіями системних інженерів, сьогодні ця структура має три критичні недоліки, через які вона стала радше академічним концептом:
+  * **Несумісність із Garbage Collection (Збиранням сміття):** Сучасні мови програмування (Java, C#, Go, Python) використовують автоматичне очищення пам'яті. Збирач сміття (GC) сканує пам'ять у пошуках дійсних вказівників. Оскільки в npx лежить "сміття" (результат побітової операції ^), GC не розпізнає його як адресу і може випадково видалити вузли списку.
+  * **Дебагінг:** При виникненні помилки розробник не може просто відкрити відлагоджувач (наприклад, GDB) і подивитися, куди вказує наступний вузол. Адресу потрібно розраховувати вручну, що робить підтримку коду надзвичайно дорогою.
+  * **Кеш-промахи:** Сучасні процесори працюють дуже швидко, але пам'ять — повільно. Тому процесор намагається завантажити дані наперед. У випадку з XOR-списком процесор не може передбачити наступну адресу, поки не виконає математичну операцію, що повністю руйнує апаратну оптимізацію.
+
+* **Спадщина в Embedded Systems (Вбудованих системах):**
+  Попри те, що сам XOR-список використовується рідко, принципи, на яких він побудований — жорстка маніпуляція пам'яттю та побітові операції — є абсолютною базою для розробки Embedded-систем (прошивки для мікроконтролерів, IoT-пристроїв, автомобільної електроніки). У цих сферах ресурси досі обмежені, і вміння працювати на рівні бітів та адрес (через типи на кшталт uintptr_t) є критично важливою навичкою для Embedded C/C++ інженера.
+
+* Grokipedia: [XOR Linked List Structure](https://grokipedia.com/page/XOR_linked_list)
+* DevGenius: [XOR Doubly Linked List Implementation](https://blog.devgenius.io/xor-doubly-linked-list-3b6123af0137)
+* Hacker News (YCombinator): [Інженерна дискусія щодо доцільності XOR Linked List](https://news.ycombinator.com/item?id=30935419)
+* Medium (Alwin T3r): [Core Embedded Systems Skill: Bitwise Operations](https://alwint3r.medium.com/core-embedded-systems-skill-bitwise-operation-17259cfb670f)
+  
+## 8. Офіційні джерела та матеріали дослідження
 
 1. **Circular Linked List:**
    * Теоретична база та алгоритми: [GeeksforGeeks — DSA Circular Linked List](https://www.geeksforgeeks.org/dsa/circular-linked-list/)
    * Особливості реалізації на C++: [GeeksforGeeks — Circular Linked List у C++](https://www.geeksforgeeks.org/cpp/circular-linked-list-in-cpp/)
-   * Відео-гайд з побудови кільця: [YouTube — Circular Linked List Tutorial](https://www.youtube.com/watch?v=gztwNv4o_9E)
+   * Відео-гайд з побудови циклу: [YouTube — Circular Linked List Tutorial](https://www.youtube.com/watch?v=gztwNv4o_9E)
 
-2. **Sentinel Nodes (Вартові вузли):**
-   * Концепція двозв'язного списку з вартовими: [GeeksforGeeks — Doubly Linked List Using Sentinel Nodes](https://www.geeksforgeeks.org/dsa/doubly-linked-list-using-sentinel-nodes/)
+2. **Sentinel Nodes:**
+   * Концепція двозв'язного списку з вузлами: [GeeksforGeeks — Doubly Linked List Using Sentinel Nodes](https://www.geeksforgeeks.org/dsa/doubly-linked-list-using-sentinel-nodes/)
    * Патерн Dummy-вузлів: [YouTube — What are Sentinel Nodes?](https://www.youtube.com/watch?v=ubxGZC7Di_U)
    * Архітектурне застосування патерну: [Medium — Linked List Pattern: Sentinel Node](https://medium.com/@DharunRaju/linked-list-pattern-sentinel-node-4eb2ce7851be)
 
 3. **XOR Linked List:**
    * Низькорівневе стиснення вказівників: [GeeksforGeeks — XOR Linked List (Memory Efficient)](https://www.geeksforgeeks.org/dsa/xor-linked-list-a-memory-efficient-doubly-linked-list-set-1/)
    * Математичне обґрунтування: [YouTube — XOR Linked List Explanation](https://www.youtube.com/watch?v=BrJP8QViH-s)
+
+Управління задачами в рамках дослідження здійснювалося за методологією Kanban:
+
+* **Live-дошка:** [Посилання на Trello-дошку проєкту](https://trello.com/invite/b/6a36c5b8b778f53705e24a0e/ATTI08fed431280fdf3bf8b548732b9c7ecbF4F833E5/%D0%B4%D0%BE%D1%81%D0%BB%D1%96%D0%B4%D0%B6%D0%B5%D0%BD%D0%BD%D1%8F)
+* **Структуровані дані:** Експорт метаданих планування збережено у репозиторії у форматі JSON (`management/trello.json`).
+
+![Дошка Канбан (Trello)](management/trellophoto.png)
