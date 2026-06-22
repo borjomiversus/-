@@ -3,8 +3,8 @@
 * **Базові теми:** Циклічний список, Список з sentinel nodes
 * **Цікаві теми:** XOR linked list
 
-*Основний відеозапис:* https://youtu.be/Qj07xCDuWd4
-*Відеозапис детального пояснення коду:* https://youtu.be/wbMklz1aVq4
+* *Основний відеозапис:* https://youtu.be/Qj07xCDuWd4
+* *Відеозапис детального пояснення коду:* https://youtu.be/wbMklz1aVq4
 
 ## 1. Циклічний список (Circular Linked List)
 
